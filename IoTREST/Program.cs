@@ -17,8 +17,7 @@ namespace IoTREST
 
         static void Main(string[] args)
         {
-            const string IOT_CONNECTION_STRING = "HostName=MarkRadHub1.azure-devices.net;DeviceId=Arduino1;SharedAccessKey=YVIMa1fGpGThuDpkfV7szFe4lzdt4sZtjtHGbY/gs0g=";
-            //const string IOT_CONNECTION_STRING = "<Insert connection string acquired from the device explorer>";
+            const string IOT_CONNECTION_STRING = "<Insert connection string acquired from the device explorer>";
             Task t = SendData(IOT_CONNECTION_STRING);
 
             Console.WriteLine("Press enter to quit");
