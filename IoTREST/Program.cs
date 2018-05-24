@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IoTREST
@@ -13,21 +14,20 @@ namespace IoTREST
     /// </summary>
     class Program
     {
-        static volatile bool Run = true;        // Remains true until user presses enter to terminate the program
-
         static void Main(string[] args)
         {
             const string IOT_CONNECTION_STRING = "<Insert connection string acquired from the device explorer>";
-            Task t = SendData(IOT_CONNECTION_STRING);
+            CancellationTokenSource cts = new CancellationTokenSource();
+            Task t = SendData(IOT_CONNECTION_STRING, cts.Token);
 
             Console.WriteLine("Press enter to quit");
             Console.ReadLine();
-            Run = false;
+            cts.Cancel();
             Task.WaitAny(t);
             Console.WriteLine("Done");
         }
 
-        private async static Task SendData(string connectionString)
+        private async static Task SendData(string connectionString, CancellationToken ct)
         {
             const int rate = 5;         // Message send rate in seconds
             int counter = rate - 1;     // Forces message send on first wake up
@@ -42,7 +42,7 @@ namespace IoTREST
             };
 */
 
-            while (Run)
+            while (!ct.IsCancellationRequested)
             {
                 try
                 {
@@ -85,7 +85,7 @@ namespace IoTREST
         }
 
         /// <summary>
-        /// Parses a connection string a makes its contents available via properties and generate a SAS token
+        /// Parses a connection string, makes its contents available via properties and generates a SAS token
         /// </summary>
         private class ConnectionInfo
         {
